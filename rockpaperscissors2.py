@@ -1,29 +1,42 @@
-import getch, sys
+import getch, sys, time
 
 class go:
-    player = int
-    choice = str
-    valid = True
-    def __init__(goID,inp):
+    
+    def __init__(self):
+        self.player = int
+        self.choice = str
+        self.valid = False
+        
+    def processInput(self,inp):
         if inp in "asdASD":
-            goID.player = 1
+            self.player = 1
             if inp in "aA":
-                goID.choice = "rock"
+                self.choice = "rock"
             elif inp in "sS":
-                goID.choice = "paper"
+                self.choice = "paper"
             else:
-                goID.choice = "scissors"
-        elif inp in "jklJKL":
-            goID.player = 2
+                self.choice = "scissors"
+            self.valid = True
+        if inp in "jklJKL":
+            self.player = 2
             if inp in "jJ":
-                goID.choice = "rock"
+                self.choice = "rock"
             elif inp in "kK":
-                goID.choice = "paper"
+                self.choice = "paper"
             else:
-                goID.choice = "scissors"
-        else:
-            valid = False
+                self.choice = "scissors"
+            self.valid = True
 
+        
+def getInputs():
+    go1 = go()
+    while go1.valid == False:
+        go1.processInput(getch.getch().decode("utf-8"))
+    go2 = go()
+    while go2.valid == False or go1.player == go2.player:
+        go2.processInput(getch.getch().decode("utf-8"))
+    return [go1,go2]
+        
 def tryAnalyse(go1,go2):
     if go1.choice == go2.choice:
         return "draw"
@@ -36,28 +49,30 @@ def tryAnalyse(go1,go2):
     else:
         return "retry"
 
-def getInputs():
-    go1 = go(getch.getch().decode("utf-8"))
-    go2 = go(getch.getch().decode("utf-8"))
-    if go1.player == go2.player:
-        go2 = go(getch.getch().decode("utf-8"))
-    if go1.valid == False:
-        go1 = go(getch.getch().decode("utf-8"))
-    if go2.valid == False:
-        go2 = go(getch.getch().decode("utf-8"))
-    # after five seconds notify that still waiting for an input
-        
-def fullAnalyse():
-    analysis = analyseDraw(go1,go2)
+def fullAnalyse(inputs):
+    go1 = inputs[0]
+    go2 = inputs[1]
+    analysis = tryAnalyse(go1,go2)
     if analysis == "retry":
-        analysis = analyseDraw(go2,go1)
+        analysis = tryAnalyse(go2,go1)
+    if analysis == "retry":
+        sys.exit("Error")
     if analysis == "draw":
         print("It's a draw!")
     else:
-        print("Player",analysis,"wins!")
-
-print("Rock, paper or scissors?\n
-      Player 1: Rock = a, Paper = s, Scissors = d\n
-      Player 2: Rock = j, Paper = k, Scissors = l")
-getInputs()
-fullAnalyse()
+        print("Player " + str(analysis) + " wins!")
+        
+print("""Rock, paper or scissors? Here are the controls:-\n
+Player 1: Rock = a, Paper = s, Scissors = d
+Player 2: Rock = j, Paper = k, Scissors = l\n
+Ready? Press any key...""")
+getch.getch()
+print("3")
+time.sleep(1)
+print("2")
+time.sleep(1)
+print("1")
+time.sleep(1)
+print("Go!")
+inputs = getInputs()
+fullAnalyse(inputs)
